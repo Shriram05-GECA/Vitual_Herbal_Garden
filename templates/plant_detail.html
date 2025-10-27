@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}{{ plant.name }} - Virtual Herbal Garden{% endblock %}
+
+{% block content %}
+<div class="plant-detail">
+    <div class="plant-header">
+        <div class="plant-image-large">
+            {% if plant.image_filename %}
+            <img src="{{ url_for('static', filename='images/plants/' + plant.image_filename) }}" alt="{{ plant.name }}">
+            {% else %}
+            <div class="no-image-large">
+                <i class="fas fa-seedling"></i>
+            </div>
+            {% endif %}
+        </div>
+        <div class="plant-basic-info">
+            <h1>{{ plant.name }}</h1>
+            <p class="scientific-name">{{ plant.scientific_name }}</p>
+            <p class="family"><strong>Family:</strong> {{ plant.family }}</p>
+            
+            <div class="plant-meta">
+                <div class="meta-item">
+                    <i class="fas fa-sun"></i>
+                    <span>{{ plant.sunlight_requirements }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-tint"></i>
+                    <span>{{ plant.water_requirements }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>{{ plant.season }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="plant-details-grid">
+        <div class="detail-section">
+            <h2><i class="fas fa-info-circle"></i> About</h2>
+            <p>{{ plant.description }}</p>
+        </div>
+
+        <div class="detail-section">
+            <h2><i class="fas fa-heart"></i> Health Benefits</h2>
+            <p>{{ plant.benefits }}</p>
+        </div>
+
+        <div class="detail-section">
+            <h2><i class="fas fa-mortar-pestle"></i> Medicinal Properties</h2>
+            <p>{{ plant.medicinal_properties }}</p>
+        </div>
+
+        <div class="detail-section">
+            <h2><i class="fas fa-utensils"></i> Culinary Uses</h2>
+            <p>{{ plant.culinary_uses }}</p>
+        </div>
+
+        <div class="detail-section">
+            <h2><i class="fas fa-seedling"></i> Growing Conditions</h2>
+            <p>{{ plant.growing_conditions }}</p>
+            <div class="growing-details">
+                <div class="growing-item">
+                    <strong>Soil Type:</strong> {{ plant.soil_type }}
+                </div>
+                <div class="growing-item">
+                    <strong>Sunlight:</strong> {{ plant.sunlight_requirements }}
+                </div>
+                <div class="growing-item">
+                    <strong>Water:</strong> {{ plant.water_requirements }}
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section precautions">
+            <h2><i class="fas fa-exclamation-triangle"></i> Precautions</h2>
+            <p>{{ plant.precautions }}</p>
+        </div>
+    </div>
+
+    <div class="back-to-garden">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Garden
+        </a>
+    </div>
+</div>
+{% endblock %}

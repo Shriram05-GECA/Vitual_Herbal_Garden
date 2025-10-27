@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+
+{% block title %}Identify Plant - Virtual Herbal Garden{% endblock %}
+
+{% block content %}
+<div class="identification-container">
+    <div class="identification-header">
+        <h1><i class="fas fa-camera"></i> Plant Identification</h1>
+        <p>Upload a photo of a plant to identify it using AI technology</p>
+    </div>
+
+    <div class="identification-form-section">
+        <h2>Upload Plant Image</h2>
+        <form method="POST" enctype="multipart/form-data" class="identification-form">
+            <div class="form-group">
+                <label for="plant_image">Plant Image *</label>
+                <input type="file" id="plant_image" name="plant_image" accept="image/*" required>
+                <small>Supported formats: JPG, PNG, GIF (Max 16MB). Try to capture leaves, flowers, or fruits clearly.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Additional Notes (Optional)</label>
+                <textarea id="notes" name="notes" rows="3" placeholder="Any additional information about the plant..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-large">
+                <i class="fas fa-search"></i> Identify Plant
+            </button>
+        </form>
+    </div>
+
+    {% if identification %}
+    <div class="identification-results">
+        <h2>Identification Results</h2>
+        
+        <div class="result-card">
+            <div class="result-image">
+                <img src="{{ url_for('static', filename='images/identifications/' + identification.image_filename) }}" 
+                     alt="Identified plant">
+            </div>
+            
+            <div class="result-details">
+                <h3>Identification Results</h3>
+                
+                <div class="result-item">
+                    <strong>Identified Species:</strong>
+                    <span class="species-name">{{ identification.identified_species }}</span>
+                </div>
+                
+                <div class="result-item">
+                    <strong>Confidence Level:</strong>
+                    <span class="confidence {% if identification.confidence > 0.7 %}high{% elif identification.confidence > 0.4 %}medium{% else %}low{% endif %}">
+                        {{ "%.1f"|format(identification.confidence * 100) }}%
+                    </span>
+                </div>
+                
+                {% if parsed_results and parsed_results.common_names %}
+                <div class="result-item">
+                    <strong>Common Names:</strong>
+                    <span>{{ parsed_results.common_names|join(', ') }}</span>
+                </div>
+                {% endif %}
+                
+                {% if matching_plant %}
+                <div class="match-found">
+                    <h4><i class="fas fa-check-circle"></i> Match Found in Database!</h4>
+                    <p>We found a matching plant in our herbal database.</p>
+                    <a href="{{ url_for('plant_detail', plant_id=matching_plant.id) }}" class="btn btn-success">
+                        View Plant Details: {{ matching_plant.name }}
+                    </a>
+                </div>
+                {% else %}
+                <div class="no-match">
+                    <h4><i class="fas fa-info-circle"></i> No Exact Match Found</h4>
+                    <p>This plant is not currently in our database. Consider adding it!</p>
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('add_plant') }}" class="btn btn-secondary">
+                        Add New Plant to Database
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">
+                        Register to Add Plants
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if recent_identifications %}
+    <div class="recent-identifications">
+        <h2>Recent Identifications</h2>
+        <div class="identifications-list">
+            {% for ident in recent_identifications %}
+            <div class="identification-item">
+                <img src="{{ url_for('static', filename='images/identifications/' + ident.image_filename) }}" 
+                     alt="Recent identification">
+                <div class="ident-info">
+                    <strong>{{ ident.identified_species }}</strong>
+                    <span class="confidence">{{ "%.1f"|format(ident.confidence * 100) }}%</span>
+                    <small>{{ ident.created_at.strftime('%Y-%m-%d') }}</small>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.identification-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.identification-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.identification-header h1 {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.identification-header p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+.identification-form-section {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.identification-form-section h2 {
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.identification-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.identification-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.identification-form input[type="file"] {
+    width: 100%;
+    padding: 1rem;
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    background: var(--background-color);
+    transition: border-color 0.3s;
+}
+
+.identification-form input[type="file"]:hover {
+    border-color: var(--primary-color);
+}
+
+.identification-form textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--background-color);
+    color: var(--text-color);
+    font-family: inherit;
+    resize: vertical;
+}
+
+.identification-form small {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--text-light);
+    font-size: 0.875rem;
+}
+
+.identification-results {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.result-card {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.result-image {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.result-image img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.result-details h3 {
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.result-item {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--background-color);
+    border-radius: 8px;
+}
+
+.result-item strong {
+    color: var(--text-color);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.species-name {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.confidence {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    color: white;
+}
+
+.confidence.high { background: #28a745; }
+.confidence.medium { background: #ffc107; color: #000; }
+.confidence.low { background: #dc3545; }
+
+.match-found, .no-match {
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+}
+
+.match-found {
+    background: rgba(40, 167, 69, 0.1);
+    border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+.no-match {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.match-found h4, .no-match h4 {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.recent-identifications {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.identifications-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.identification-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--background-color);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.identification-item img {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.ident-info {
+    flex: 1;
+}
+
+.ident-info strong {
+    color: var(--text-color);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.ident-info small {
+    color: var(--text-light);
+}
+
+[data-theme="dark"] .identification-form-section,
+[data-theme="dark"] .identification-results,
+[data-theme="dark"] .recent-identifications {
+    background: #2d3748;
+}
+
+@media (max-width: 768px) {
+    .identification-container {
+        padding: 1rem;
+    }
+    
+    .result-card {
+        grid-template-columns: 1fr;
+    }
+    
+    .result-image {
+        text-align: center;
+    }
+    
+    .result-image img {
+        max-width: 300px;
+    }
+}
+</style>
+{% endblock %}

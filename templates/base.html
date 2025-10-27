@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="{{ current_language }}" data-theme="{{ current_theme }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ t('welcome') }}{% endblock %}</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="{{ url_for('index') }}" class="logo-link">
+                    <div class="logo-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <span class="logo-text">Virtual Herbal Garden</span>
+                </a>
+            </div>
+            
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="{{ url_for('categories') }}" class="nav-link">
+                    <i class="fas fa-tags"></i>
+                    <span>Categories</span>
+                </a>
+                <a href="{{ url_for('identify_plant') }}" class="nav-link">
+                    <i class="fas fa-camera"></i>
+                    <span>Identify</span>
+                </a>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('add_plant') }}" class="nav-link">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Plant</span>
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="nav-controls">
+                <!-- Language Switcher -->
+                <div class="language-switcher">
+                    <button class="lang-btn {% if current_language == 'en' %}active{% endif %}" 
+                            onclick="setLanguage('en')">EN</button>
+                    <button class="lang-btn {% if current_language == 'hi' %}active{% endif %}" 
+                            onclick="setLanguage('hi')">HI</button>
+                    <button class="lang-btn {% if current_language == 'es' %}active{% endif %}" 
+                            onclick="setLanguage('es')">ES</button>
+                </div>
+
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                <!-- User Menu -->
+                {% if current_user.is_authenticated %}
+                    <div class="user-menu">
+                        <span>Welcome, {{ current_user.username }}</span>
+                        {% if current_user.is_admin() %}
+                            <a href="{{ url_for('admin_dashboard') }}" class="nav-link">
+                                <i class="fas fa-crown"></i>
+                                <span>Admin</span>
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('user_dashboard') }}" class="nav-link">
+                                <i class="fas fa-user"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        {% endif %}
+                        <a href="{{ url_for('auth.logout') }}" class="nav-link">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="auth-links">
+                        <a href="{{ url_for('auth.login') }}" class="nav-link">Login</a>
+                        <a href="{{ url_for('auth.register') }}" class="nav-link">Register</a>
+                        <!-- Demo Logins -->
+                        <a href="{{ url_for('auth.demo_login', role='user') }}" class="nav-link demo-link">Demo User</a>
+                        <a href="{{ url_for('auth.demo_login', role='admin') }}" class="nav-link demo-link">Demo Admin</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                            <button class="alert-close" onclick="this.parentElement.remove()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 Virtual Herbal Garden. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function setLanguage(lang) {
+            window.location.href = `/set-language/${lang}`;
+        }
+
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            window.location.href = `/set-theme/${newTheme}`;
+        });
+    </script>
+</body>
+</html>

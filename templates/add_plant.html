@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Plant - Virtual Herbal Garden{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Add New Plant to Garden</h1>
+    
+    <form method="POST" enctype="multipart/form-data" class="plant-form">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="name">Plant Name *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="scientific_name">Scientific Name</label>
+                <input type="text" id="scientific_name" name="scientific_name">
+            </div>
+
+            <div class="form-group">
+                <label for="family">Family</label>
+                <input type="text" id="family" name="family">
+            </div>
+
+            <div class="form-group full-width">
+                <label for="image">Plant Image</label>
+                <input type="file" id="image" name="image" accept="image/*">
+                <small>Supported formats: JPG, PNG, GIF (Max 16MB)</small>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="benefits">Health Benefits</label>
+                <textarea id="benefits" name="benefits" rows="3"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="uses">Common Uses</label>
+                <textarea id="uses" name="uses" rows="3"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="medicinal_properties">Medicinal Properties</label>
+                <textarea id="medicinal_properties" name="medicinal_properties" rows="3"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="culinary_uses">Culinary Uses</label>
+                <textarea id="culinary_uses" name="culinary_uses" rows="3"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="growing_conditions">Growing Conditions</label>
+                <textarea id="growing_conditions" name="growing_conditions" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="season">Season</label>
+                <input type="text" id="season" name="season">
+            </div>
+
+            <div class="form-group">
+                <label for="water_requirements">Water Requirements</label>
+                <select id="water_requirements" name="water_requirements">
+                    <option value="">Select...</option>
+                    <option value="Low">Low</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="High">High</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="sunlight_requirements">Sunlight Requirements</label>
+                <select id="sunlight_requirements" name="sunlight_requirements">
+                    <option value="">Select...</option>
+                    <option value="Full sun">Full sun</option>
+                    <option value="Partial sun">Partial sun</option>
+                    <option value="Partial shade">Partial shade</option>
+                    <option value="Full shade">Full shade</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="soil_type">Soil Type</label>
+                <input type="text" id="soil_type" name="soil_type">
+            </div>
+
+            <div class="form-group full-width">
+                <label for="precautions">Precautions</label>
+                <textarea id="precautions" name="precautions" rows="3"></textarea>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Plant
+            </button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

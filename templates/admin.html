@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Virtual Herbal Garden{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>Garden Administration</h1>
+    
+    <div class="admin-stats">
+        <div class="stat-card">
+            <h3>{{ plants|length }}</h3>
+            <p>Total Plants</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ plants|selectattr('medicinal_properties')|list|length }}</h3>
+            <p>Medicinal Plants</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ plants|selectattr('culinary_uses')|list|length }}</h3>
+            <p>Culinary Plants</p>
+        </div>
+    </div>
+
+    <div class="plants-table">
+        <h2>All Plants</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Scientific Name</th>
+                    <th>Family</th>
+                    <th>Added On</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plant in plants %}
+                <tr>
+                    <td>{{ plant.id }}</td>
+                    <td>{{ plant.name }}</td>
+                    <td>{{ plant.scientific_name }}</td>
+                    <td>{{ plant.family }}</td>
+                    <td>{{ plant.created_at.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <a href="{{ url_for('plant_detail', plant_id=plant.id) }}" class="btn btn-small">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

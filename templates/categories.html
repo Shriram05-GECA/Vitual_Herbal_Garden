@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Plant Categories - Virtual Herbal Garden{% endblock %}
+
+{% block content %}
+<div class="categories-container">
+    <div class="categories-header">
+        <h1><i class="fas fa-tags"></i> Plant Categories</h1>
+        <p>Browse plants by their therapeutic categories and properties</p>
+    </div>
+
+    <div class="categories-grid">
+        {% for category in categories %}
+        <div class="category-card" onclick="location.href='{{ url_for('category_plants', category_id=category.id) }}'">
+            <div class="category-icon">
+                <i class="fas fa-seedling"></i>
+            </div>
+            <div class="category-info">
+                <h3>{{ category.name }}</h3>
+                <p>{{ category.description }}</p>
+                <div class="plant-count">
+                    {{ category.plants|length }} plants
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="categories-stats">
+        <div class="stat-card">
+            <h3>{{ categories|length }}</h3>
+            <p>Total Categories</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ categories|sum(attribute='plants|length') }}</h3>
+            <p>Total Plants</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.categories-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.categories-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.categories-header h1 {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.categories-header p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.category-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s;
+    cursor: pointer;
+    text-align: center;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-color: var(--primary-color);
+}
+
+.category-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2rem;
+}
+
+.category-info h3 {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.category-info p {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.plant-count {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.categories-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+}
+
+.stat-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.stat-card h3 {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+[data-theme="dark"] .category-card,
+[data-theme="dark"] .stat-card {
+    background: #2d3748;
+}
+
+@media (max-width: 768px) {
+    .categories-container {
+        padding: 1rem;
+    }
+    
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
